@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FRW — Admin Control Panel</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Sans Bengali",sans-serif;background:#f5f6f8;color:#111}button,input,select,textarea{font:inherit}button{cursor:pointer}.hide{display:none!important}
+.login{min-height:100vh;display:grid;place-items:center;background:#0b0b0b}.loginbox{width:min(420px,92%);background:#fff;padding:30px;border-radius:14px}.logo{font-weight:900;font-size:28px;letter-spacing:4px;text-align:center}.muted{color:#777;font-size:12px}.field{margin:12px 0}.field label{display:block;font-size:13px;font-weight:bold;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;padding:11px;border:1px solid #ddd;border-radius:7px}.btn{border:0;background:#111;color:#fff;padding:10px 15px;border-radius:7px}.btn.alt{background:#fff;color:#111;border:1px solid #ddd}.btn.red{background:#c00}.side{position:fixed;inset:0 auto 0 0;width:235px;background:#090909;color:#fff;padding:18px;z-index:5}.side h2{letter-spacing:3px}.nav{margin-top:25px}.nav button{width:100%;text-align:left;padding:12px;margin:5px 0;background:transparent;color:#bbb;border:0;border-radius:7px}.nav button.active,.nav button:hover{background:#fff;color:#111}.main{margin-left:235px;padding:24px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.top h1{margin:0}.actions{display:flex;gap:8px}.section{display:none}.section.active{display:block}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.stat,.panel{background:#fff;border:1px solid #e6e6e6;border-radius:10px;padding:18px}.stat b{font-size:25px;display:block;margin-top:5px}.panel{margin-top:18px}.head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px}.head h2{margin:0;font-size:18px}.search{padding:10px;border:1px solid #ddd;border-radius:7px;width:260px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:850px}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left;font-size:12px}th{background:#fafafa}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.product{border:1px solid #ddd;border-radius:9px;padding:12px}.product img,.noimg{width:100%;height:170px;object-fit:cover;border-radius:7px;background:#eee}.noimg{display:grid;place-items:center;color:#888}.product h3{font-size:14px}.product p{font-size:12px;color:#666}.coupon{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.couponcard{border:1px dashed #aaa;padding:15px;border-radius:8px}.row{display:grid;grid-template-columns:1fr 1fr;gap:15px}.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:15px;z-index:30}.modal.show{display:flex}.modalbox{width:min(800px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:12px;padding:22px}.modalhead{display:flex;justify-content:space-between}.close{border:0;background:none;font-size:25px}.logo-preview{width:120px;height:120px;border:1px solid #ddd;border-radius:8px;display:grid;place-items:center;background:#f3f3f3;overflow:hidden}.logo-preview img{max-width:100%;max-height:100%;object-fit:contain}.toast{position:fixed;right:18px;bottom:18px;background:#111;color:#fff;padding:12px 18px;border-radius:7px;z-index:50}
+@media(max-width:1000px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:700px){.side{width:62px;padding:12px 7px}.side h2{font-size:10px}.nav span{display:none}.nav button{text-align:center}.main{margin-left:62px;padding:13px}.top h1{font-size:19px}.grid,.row,.coupon{grid-template-columns:1fr}.search{width:100%}.head{align-items:stretch;flex-direction:column}}
+</style>
+</head>
+<body>
+<div id="loginScreen" class="login"><div class="loginbox">
+<div class="logo">F R W</div><p class="muted" style="text-align:center">ONLINE SHOP ADMIN</p>
+<div class="field"><label>Username</label><input id="loginUser" value="admin"></div>
+<div class="field"><label>Password</label><input id="loginPass" type="password"></div>
+<button class="btn" style="width:100%" onclick="doLogin()">Login</button>
+<p id="loginError" style="display:none;color:#c00;font-size:12px">Username বা password ভুল।</p>
+<p class="muted">প্রথমবার: admin / 123456</p>
+</div></div>
+
+<div id="app" class="hide">
+<div id="fileWarning" class="hide" style="position:fixed;top:0;left:0;right:0;background:#c00;color:#fff;padding:10px 14px;text-align:center;font-size:13px;z-index:100">
+⚠️ আপনি এই ফাইলটি সরাসরি ডাবল-ক্লিক করে (file://) খুলেছেন — এভাবে খুললে Website ফাইলে data (product/logo/slider) sync নাও হতে পারে। এটা local server (যেমন VS Code Live Server) অথবা hosting-এ খুলুন।
+</div>
+<aside class="side"><h2>FRW</h2><small>CONTROL PANEL</small><div class="nav">
+<button class="active" data-go="dashboard">▣ <span>Dashboard</span></button>
+<button data-go="orders">▤ <span>Orders</span></button>
+<button data-go="products">🛍 <span>Products</span></button>
+<button data-go="coupons">🏷 <span>Coupons</span></button>
+<button data-go="website">🌐 <span>Website</span></button>
+<button data-go="settings">⚙ <span>Settings</span></button>
+<button onclick="logout()">↪ <span>Logout</span></button>
+</div></aside>
+<main class="main">
+<div class="top"><h1 id="pageTitle">Dashboard</h1><div class="actions"><button class="btn alt" onclick="refreshAll()">Refresh</button><button class="btn" onclick="openWebsite()">View Website</button></div></div>
+
+<section id="dashboard" class="section active"><div class="stats"><div class="stat">Orders<b id="so">0</b></div><div class="stat">Sales<b id="ss">৳0</b></div><div class="stat">Pending<b id="spn">0</b></div><div class="stat">Delivered<b id="sd">0</b></div></div>
+<div class="panel"><div class="head"><h2>Recent Orders</h2><button class="btn alt" onclick="go('orders')">All Orders</button></div><div class="tablewrap"><table><thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th></tr></thead><tbody id="recent"></tbody></table></div></div></section>
+
+<section id="orders" class="section"><div class="panel"><div class="head"><h2>Orders</h2><input id="orderSearch" class="search" placeholder="Order ID / নাম / ফোন" oninput="renderOrders()"></div><div class="tablewrap"><table><thead><tr><th>ID</th><th>Customer</th><th>Phone</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Action</th></tr></thead><tbody id="orderBody"></tbody></table></div></div></section>
+
+<section id="products" class="section"><div class="panel"><div class="head"><h2>Product Management</h2><button class="btn" onclick="productModal()">+ Add Product</button></div><div id="productGrid" class="grid"></div></div></section>
+
+<section id="coupons" class="section"><div class="panel"><div class="head"><h2>Coupons</h2><button class="btn" onclick="couponModal()">+ Add Coupon</button></div><div id="couponGrid" class="coupon"></div></div></section>
+
+<section id="website" class="section"><div class="panel"><div class="head"><h2>Logo & Website Branding</h2></div>
+<div class="field"><label>Public Website URL (View Website বাটন এই লিংকে নিয়ে যাবে)</label><input id="websiteUrl" placeholder="FRW-Online-Shop.html অথবা https://yourdomain.com"><small class="muted">Website file একই ফোল্ডারে থাকলে শুধু ফাইলের নাম দিন, অথবা আপনার ডোমেইনের সম্পূর্ণ লিংক দিন।</small></div>
+<div class="row"><div><div class="field"><label>Website Logo</label><input id="logoFile" type="file" accept="image/png,image/jpeg,image/webp"></div><button class="btn" onclick="saveLogo()">Save Logo</button> <button class="btn red" onclick="removeLogo()">Remove Logo</button><p class="muted">Logo browser-এ save হবে এবং Public Website একই logo ব্যবহার করবে।</p></div><div><div class="logo-preview" id="logoPreview">FRW</div></div></div>
+<hr><div class="row"><div><div class="field"><label>WhatsApp Number</label>
+<input id="waNumber" type="tel" placeholder="8801XXXXXXXXX">
+<small style="opacity:.7">দেশের কোডসহ দিন, যেমন: 8801XXXXXXXXX</small>
+<button type="button" onclick="saveWhatsAppSetting()">WhatsApp Save</button>
+<label>Support Gmail</label>
+<input id="supportEmail" type="email" placeholder="support@gmail.com">
+<small style="opacity:.7">Customer support-এর জন্য Gmail address দিন</small>
+<button type="button" onclick="saveSupportEmail()">Support Gmail Save</button>
+
+<label>Store Name</label><input id="storeName"></div><div class="field"><label>Contact Phone</label><input id="phone"></div></div><div><div class="field"><label>Facebook Page 1 URL</label><input id="facebook1" placeholder="https://facebook.com/..."></div><div class="field"><label>Facebook Page 2 URL</label><input id="facebook2" placeholder="https://facebook.com/..."></div><div class="field"><label>Facebook Page 3 URL</label><input id="facebook3" placeholder="https://facebook.com/..."></div><div class="field"><label>TikTok URL</label><input id="tiktok" placeholder="https://tiktok.com/@..."></div><div class="field"><label>YouTube URL</label><input id="youtube" placeholder="https://youtube.com/@..."></div></div></div>
+<button class="btn" onclick="saveWebsite()">Save Website Settings</button>
+<hr><h3>🖼️ Homepage Slider</h3>
+<p class="muted">যত ইচ্ছা slider যোগ করতে পারবেন, প্রতিটির title, subtitle, offer, button text এবং ছবি পরিবর্তন করতে পারবেন, এবং না চাইলে মুছেও ফেলতে পারবেন।</p>
+<div id="sliderAdmin"></div>
+<button class="btn alt" onclick="addSliderRow()">+ Add Slider</button>
+<button class="btn" onclick="saveSliders()">Save Sliders</button>
+<hr><h3>🚚 Order Tracking</h3><p class="muted">Orders section-এ প্রতিটি order খুলে Parcel ID ও Tracking URL যোগ করা যাবে।</p></div></section>
+
+<section id="settings" class="section"><div class="panel"><h2>Admin + Payment + Policies</h2><div class="row">
+<div><div class="field"><label>Admin Username</label><input id="adminU"></div><div class="field"><label>New Password</label><input id="adminP" type="password" placeholder="খালি রাখলে আগের password থাকবে"></div><button class="btn" onclick="saveAdmin()">Save Login</button></div>
+<div><div class="field"><label>bKash Send Money Number</label><input id="bkash"></div><div class="field"><label>Nagad Send Money Number</label><input id="nagad"></div><div class="row"><div class="field"><label>Delivery Charge — ঢাকা (৳)</label><input id="deliveryDhaka" type="number"></div><div class="field"><label>Delivery Charge — ঢাকার বাইরে (৳)</label><input id="deliveryOutside" type="number"></div></div><p><label><input id="cod" type="checkbox"> COD</label> <label><input id="bk" type="checkbox"> bKash</label> <label><input id="ng" type="checkbox"> Nagad</label></p><button class="btn" onclick="savePayment()">Save Payment</button></div>
+</div><hr><div class="row"><div class="field"><label>Return Policy</label><textarea id="returnPolicy" rows="8"></textarea></div><div class="field"><label>Privacy Policy</label><textarea id="privacyPolicy" rows="8"></textarea></div></div><button class="btn" onclick="savePolicies()">Save Policies</button></div></section>
+</main></div>
+
+<div id="modal" class="modal"><div class="modalbox"><div class="modalhead"><h2 id="modalTitle">Form</h2><button class="close" onclick="closeModal()">×</button></div><div id="modalContent"></div></div></div>
+<div id="toast" class="toast hide"></div>
+
+<script>
+const K={admin:"frwAdminCreds",products:"frwProducts",coupons:"frwCoupons",settings:"frwSettings",orders:"frwOrders"};
+const defaults={name:"F R W ONLINE SHOP",phone:"01812345678",bkash:"01XXXXXXXXX",nagad:"01XXXXXXXXX",cod:true,bk:true,ng:true,deliveryDhaka:80,deliveryOutside:140,facebook1:"",facebook2:"",facebook3:"",tiktok:"",youtube:"",websiteUrl:"FRW-Online-Shop.html",returnPolicy:"পণ্য হাতে পাওয়ার ৭ দিনের মধ্যে রিটার্ন রিকোয়েস্ট করতে হবে।",privacyPolicy:"আপনার তথ্য শুধুমাত্র order processing-এর জন্য ব্যবহার করা হবে।"};
+const defaultProducts=[
+{id:1,name:"প্রিমিয়াম কটন পাঞ্জাবি",cat:"পাঞ্জাবি",price:1280,old:1600,discount:20,icon:"fa-shirt",desc:"নরম ও আরামদায়ক প্রিমিয়াম কটন পাঞ্জাবি।",stock:20,size:"S,M,L,XL",img:""},
+{id:2,name:"জর্জেট শাড়ি",cat:"শাড়ি",price:1699,old:1999,discount:15,icon:"fa-person-dress",desc:"আকর্ষণীয় ডিজাইনের জর্জেট শাড়ি।",stock:15,size:"Free",img:""},
+{id:3,name:"প্রিমিয়াম টি শার্ট",cat:"টি শার্ট",price:450,old:500,discount:10,icon:"fa-shirt",desc:"আরামদায়ক টি শার্ট।",stock:30,size:"S,M,L,XL",img:""}];
+function get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}}function set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){alert("Storage full হয়ে গেছে (browser এর জায়গা শেষ) — কিছু পুরনো product/order/image মুছে জায়গা খালি করুন, তারপর আবার চেষ্টা করুন।");return false}}function money(n){return "৳"+Number(n||0).toLocaleString("en-US")}function esc(x){return String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function checkFileWarning(){if(location.protocol==="file:"){let w=document.getElementById("fileWarning");if(w){w.classList.remove("hide");document.querySelector(".main").style.marginTop="46px";document.querySelector(".side").style.marginTop="46px"}}}
+function doLogin(){let a=get(K.admin,{u:"admin",p:"123456"});if(loginUser.value===a.u&&loginPass.value===a.p){sessionStorage.frwAdminOK="1";loginScreen.classList.add("hide");app.classList.remove("hide");refreshAll();checkFileWarning()}else loginError.style.display="block"}function logout(){sessionStorage.removeItem("frwAdminOK");location.reload()}if(sessionStorage.frwAdminOK==="1"){loginScreen.classList.add("hide");app.classList.remove("hide");checkFileWarning()}
+document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));function go(id){document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));document.querySelector(`[data-go="${id}"]`).classList.add("active");pageTitle.textContent={dashboard:"Dashboard",orders:"Orders",products:"Products",coupons:"Coupons",website:"Website & Logo",settings:"Settings"}[id];refreshAll()}
+function getOrders(){return Object.values(get(K.orders,{}))}function refreshAll(){renderDash();renderOrders();renderProducts();renderCoupons();loadSettings()}
+function renderDash(){let o=getOrders(),sales=o.reduce((a,x)=>a+Number(x.total||0),0);so.textContent=o.length;ss.textContent=money(sales);spn.textContent=o.filter(x=>x.status==="Pending").length;sd.textContent=o.filter(x=>x.status==="Delivered").length;recent.innerHTML=o.slice().reverse().slice(0,8).map(x=>`<tr><td>${esc(x.id)}</td><td>${esc(x.name)}</td><td>${x.items||0}</td><td>${money(x.total)}</td><td>${esc(x.status||"Pending")}</td></tr>`).join("")||'<tr><td colspan="5">কোনো order নেই</td></tr>'}
+function renderOrders(){let q=(orderSearch.value||"").toLowerCase();let o=getOrders().filter(x=>(x.id+" "+x.name+" "+x.phone).toLowerCase().includes(q));orderBody.innerHTML=o.map(x=>`<tr><td><b>${esc(x.id)}</b><br><small>${esc(x.created||"")}</small></td><td>${esc(x.name)}</td><td>${esc(x.phone)}</td><td>${x.items||0}</td><td>${money(x.total)}</td><td>${esc(x.payment||"COD")}<br>${esc(x.transactionId||"")}</td><td><select onchange="setStatus('${esc(x.id)}',this.value)">${["Pending","Confirmed","Processing","Shipped","Delivered","Cancelled"].map(s=>`<option ${s===(x.status||"Pending")?"selected":""}>${s}</option>`).join("")}</select></td><td><button class="btn alt" onclick="viewOrder('${esc(x.id)}')">View</button> <button class="btn red" onclick="deleteOrder('${esc(x.id)}')">Delete</button></td></tr>`).join("")||'<tr><td colspan="8">কোনো order নেই</td></tr>'}
+function setStatus(id,s){let o=get(K.orders,{});if(o[id]){o[id].status=s;set(K.orders,o);refreshAll();toast("Status saved")}}
+function viewOrder(id){
+ let o=get(K.orders,{})[id];if(!o)return;
+ openModal("Order Details",`<div class="row"><div><p><b>Name:</b> ${esc(o.name)}</p><p><b>Phone:</b> ${esc(o.phone)}</p><p><b>Division:</b> ${esc(o.division)}</p><p><b>District:</b> ${esc(o.district)}</p><p><b>Address:</b> ${esc(o.address)}</p></div><div><p><b>Order ID:</b> ${esc(o.id)}</p><p><b>Items:</b> ${o.items||0}</p><p><b>Subtotal:</b> ${money(o.subtotal||0)}</p><p><b>Delivery:</b> ${money(o.deliveryCharge||0)}</p><p><b>Total:</b> ${money(o.total)}</p><p><b>Payment:</b> ${esc(o.payment)}</p><p><b>Status:</b> ${esc(o.status)}</p></div></div>
+ <hr><h3>🚚 Parcel Tracking</h3>
+ <div class="field"><label>Parcel ID</label><input id="parcelId" value="${esc(o.parcelId||"")}" placeholder="Parcel ID"></div>
+ <div class="field"><label>Tracking URL</label><input id="trackingUrl" value="${esc(o.trackingUrl||"")}" placeholder="https://..."></div>
+ <button class="btn" onclick="saveTracking('${esc(o.id)}')">Save Tracking</button>`)
+}
+function saveTracking(id){
+ let o=get(K.orders,{});if(!o[id])return;
+ o[id].parcelId=document.getElementById("parcelId").value.trim();
+ o[id].trackingUrl=document.getElementById("trackingUrl").value.trim();
+ set(K.orders,o);closeModal();refreshAll();toast("Tracking saved");
+}
+function deleteOrder(id){if(!confirm("Order delete করবেন?"))return;let o=get(K.orders,{});delete o[id];set(K.orders,o);refreshAll();toast("Order deleted")}
+function getProducts(){return get(K.products,defaultProducts)}function renderProducts(){let current=getProducts();productGrid.innerHTML=[...current].sort((a,b)=>Number(b.createdAt||b.id||0)-Number(a.createdAt||a.id||0)).map(p=>`<div class="product">${p.img?`<img src="${p.img}">`:'<div class="noimg">No Photo</div>'}<h3>${esc(p.name)}</h3><p>${esc(p.cat)} · ${money(p.price)} · Stock: ${p.stock}</p><button class="btn alt" onclick="productModal(${p.id})">Edit</button> <button class="btn red" onclick="deleteProduct(${p.id})">Delete</button></div>`).join("")}
+function productModal(id=null){
+ let p=id?getProducts().find(x=>x.id===id):{id:null,name:"",cat:"",price:0,old:0,stock:0,size:"",desc:"",img:""};
+ openModal(id?"Edit Product":"Add Product",`<div class="field"><label>Product Name</label><input id="pn" value="${esc(p.name||"")}"></div><div class="row"><div class="field"><label>Category</label><input id="pc" value="${esc(p.cat||"")}"></div><div class="field"><label>Price</label><input id="pr" type="number" value="${p.price||0}"></div></div><div class="row"><div class="field"><label>Stock</label><input id="pst" type="number" value="${p.stock||0}"></div><div class="field"><label>Old Price (optional, discount দেখাতে)</label><input id="polda" type="number" value="${p.old||""}"></div></div><div class="field"><label>Size/Variant (কমা দিয়ে আলাদা করুন)</label><input id="psz" value="${esc(p.size||"")}"></div><div class="field"><label>Description</label><textarea id="pdesc">${esc(p.desc||"")}</textarea></div><div class="field"><label>Photo</label><input id="pimg" type="file" accept="image/*"></div><button class="btn" onclick="saveProduct(${id||0})">Save Product</button>`)
+}
+function saveProduct(id){
+ let ps=getProducts(), p=id?ps.find(x=>x.id===id):null;
+ if(!p){p={id:Date.now(),createdAt:Date.now()};ps.unshift(p)}
+ p.name=pn.value.trim();p.cat=pc.value.trim();p.price=Number(pr.value)||0;p.stock=Math.max(0,Number(pst.value)||0);p.size=psz.value.trim();p.desc=pdesc.value.trim();if(!p.name)return alert("Product Name দিন");
+ let oldPrice=Number(polda.value)||0;
+ if(oldPrice>p.price){p.old=oldPrice;p.discount=Math.round((oldPrice-p.price)/oldPrice*100)}else{delete p.old;delete p.discount}
+ let f=pimg.files[0];
+ const done=()=>{
+  if(!set(K.products,ps))return;
+  window.dispatchEvent(new StorageEvent("storage",{key:K.products,newValue:JSON.stringify(ps)}));
+    closeModal();renderProducts();toast("Product saved — Website-এও update হয়েছে");
+};
+ if(f){if(f.size>3*1024*1024)return alert("Photo 3MB-এর মধ্যে রাখুন");let r=new FileReader();r.onload=()=>{p.img=r.result;done()};r.readAsDataURL(f)}else done();
+}
+function deleteProduct(id){if(!confirm("Product delete করবেন?"))return;set(K.products,getProducts().filter(x=>x.id!==id));renderProducts();toast("Product deleted")}
+function getCoupons(){return get(K.coupons,[])}function renderCoupons(){couponGrid.innerHTML=getCoupons().map(c=>`<div class="couponcard"><b>${esc(c.code)}</b><p>${c.type==="percent"?c.value+"%":money(c.value)} discount</p><p>Minimum: ${money(c.min||0)}</p><p>${c.expiry?"Expiry: "+esc(c.expiry):"No expiry"} · ${c.active?"Active":"Inactive"}</p><button class="btn alt" onclick="couponModal(${c.id})">Edit</button> <button class="btn red" onclick="deleteCoupon(${c.id})">Delete</button></div>`).join("")||'<p class="muted">কোনো coupon নেই।</p>'}
+function couponModal(id=null){let c=id?getCoupons().find(x=>x.id===id):{id:Date.now(),code:"",type:"percent",value:10,min:0,expiry:"",active:true};openModal(id?"Edit Coupon":"Add Coupon",`<div class="field"><label>Coupon Code</label><input id="cc" value="${esc(c.code)}"></div><div class="row"><div class="field"><label>Type</label><select id="ct"><option value="percent" ${c.type==="percent"?"selected":""}>Percentage</option><option value="fixed" ${c.type==="fixed"?"selected":""}>Fixed Amount</option></select></div><div class="field"><label>Value</label><input id="cv" type="number" value="${c.value}"></div></div><div class="row"><div class="field"><label>Minimum Order</label><input id="cm" type="number" value="${c.min||0}"></div><div class="field"><label>Expiry</label><input id="ce" type="date" value="${c.expiry||""}"></div></div><p><label><input id="ca" type="checkbox" ${c.active!==false?"checked":""}> Active</label></p><button class="btn" onclick="saveCoupon(${c.id})">Save Coupon</button>`)}
+function saveCoupon(id){let cs=getCoupons(),c=cs.find(x=>x.id===id);if(!c){c={id};cs.push(c)}c.code=cc.value.trim().toUpperCase();c.type=ct.value;c.value=Number(cv.value)||0;c.min=Number(cm.value)||0;c.expiry=ce.value;c.active=ca.checked;if(!c.code)return alert("Coupon code দিন");set(K.coupons,cs);closeModal();toast("Coupon saved")}
+function deleteCoupon(id){if(!confirm("Coupon delete করবেন?"))return;set(K.coupons,getCoupons().filter(x=>x.id!==id));toast("Coupon deleted")}
+function loadSettings(){
+ let s={...defaults,...get(K.settings,{})};
+ storeName.value=s.name||defaults.name;phone.value=s.phone||defaults.phone;
+ const wu=document.getElementById("websiteUrl");if(wu)wu.value=s.websiteUrl||defaults.websiteUrl;
+ const dd=document.getElementById("deliveryDhaka");if(dd)dd.value=s.deliveryDhaka??defaults.deliveryDhaka;
+ const do_=document.getElementById("deliveryOutside");if(do_)do_.value=s.deliveryOutside??defaults.deliveryOutside;
+ const f1=document.getElementById("facebook1"),f2=document.getElementById("facebook2"),f3=document.getElementById("facebook3");
+ if(f1)f1.value=s.facebook1||"";if(f2)f2.value=s.facebook2||"";if(f3)f3.value=s.facebook3||"";
+ const tt=document.getElementById("tiktok"),yt=document.getElementById("youtube");
+ if(tt)tt.value=s.tiktok||"";if(yt)yt.value=s.youtube||"";
+ const wa=document.getElementById("waNumber");if(wa)wa.value=s.whatsapp||"";
+ const se=document.getElementById("supportEmail");if(se)se.value=s.supportEmail||"";
+ bkash.value=s.bkash||defaults.bkash;nagad.value=s.nagad||defaults.nagad;
+ cod.checked=s.cod!==false;bk.checked=s.bk!==false;ng.checked=s.ng!==false;
+ returnPolicy.value=s.returnPolicy||"";privacyPolicy.value=s.privacyPolicy||"";
+ adminU.value=get(K.admin,{u:"admin"}).u;
+ let box=document.getElementById("logoPreview");box.innerHTML=s.logo?`<img src="${s.logo}">`:"FRW";
+ renderSliderAdmin(true);
+}
+function saveLogo(){let f=logoFile.files[0];if(!f)return alert("একটি logo image নির্বাচন করুন");if(f.size>2*1024*1024)return alert("Logo 2MB-এর মধ্যে রাখুন");let r=new FileReader();r.onload=()=>{let s={...defaults,...get(K.settings,{})};s.logo=r.result;set(K.settings,s);loadSettings();toast("Logo saved")};r.readAsDataURL(f)}
+function removeLogo(){let s={...defaults,...get(K.settings,{})};delete s.logo;set(K.settings,s);loadSettings();toast("Logo removed")}
+function saveWebsite(){
+ let s={...defaults,...get(K.settings,{})};
+ s.name=document.getElementById("storeName").value.trim()||defaults.name;
+ s.phone=document.getElementById("phone").value.trim();
+ s.facebook1=document.getElementById("facebook1")?.value.trim()||"";
+ s.facebook2=document.getElementById("facebook2")?.value.trim()||"";
+ s.facebook3=document.getElementById("facebook3")?.value.trim()||"";
+ s.tiktok=document.getElementById("tiktok")?.value.trim()||"";
+ s.youtube=document.getElementById("youtube")?.value.trim()||"";
+ s.whatsapp=document.getElementById("waNumber")?.value.trim()||s.whatsapp||"";
+ s.supportEmail=document.getElementById("supportEmail")?.value.trim()||s.supportEmail||"";
+ s.websiteUrl=document.getElementById("websiteUrl")?.value.trim()||defaults.websiteUrl;
+ set(K.settings,s);toast("Website settings saved");
+}
+function savePayment(){
+ let s={...defaults,...get(K.settings,{})};
+ s.bkash=document.getElementById("bkash").value.trim();s.nagad=document.getElementById("nagad").value.trim();
+ s.cod=document.getElementById("cod").checked;s.bk=document.getElementById("bk").checked;s.ng=document.getElementById("ng").checked;
+ s.deliveryDhaka=Number(document.getElementById("deliveryDhaka").value)||defaults.deliveryDhaka;
+ s.deliveryOutside=Number(document.getElementById("deliveryOutside").value)||defaults.deliveryOutside;
+ set(K.settings,s);toast("Payment & delivery settings saved");
+}
+function savePolicies(){let s={...defaults,...get(K.settings,{} )};s.returnPolicy=document.getElementById("returnPolicy").value;s.privacyPolicy=document.getElementById("privacyPolicy").value;set(K.settings,s);toast("Policies saved")}
+function saveAdmin(){let old=get(K.admin,{u:"admin",p:"123456"}),u=document.getElementById("adminU").value.trim(),p=document.getElementById("adminP").value;if(!u)return alert("Username দিন");let next={u,p:p?String(p):String(old.p||"123456")};if(!set(K.admin,next))return;adminP.value="";toast("Admin username/password permanently saved");}
+const defaultSliders=[
+{title:"নতুন ফ্যাশন কালেকশন",subtitle:"আপনার পছন্দ, আমাদের দায়িত্ব",offer:"UP TO 50% OFF",button:"এখনই কেনাকাটা করুন"},
+{title:"প্রিমিয়াম পাঞ্জাবি",subtitle:"আধুনিক ডিজাইনে ঐতিহ্যের ছোঁয়া",offer:"UP TO 40% OFF",button:"কালেকশন দেখুন"},
+{title:"সবার জন্য স্টাইল",subtitle:"গুণগত মান ও সাশ্রয়ী দাম",offer:"FLAT 30% OFF",button:"এখনই কিনুন"}];
+function getSliders(){return get("frwSliders",defaultSliders)}
+let editingSliders=null;
+function renderSliderAdmin(fresh){
+ if(fresh||!editingSliders) editingSliders=getSliders().length?getSliders():[{title:"",subtitle:"",offer:"",button:"",image:""}];
+ const box=document.getElementById("sliderAdmin");if(!box)return;
+ box.innerHTML=editingSliders.map((s,i)=>`<div style="border:1px solid #ddd;padding:12px;border-radius:8px;margin:10px 0">
+ <div class="head" style="margin-bottom:10px"><b>Slider ${i+1}</b><button type="button" class="btn red" onclick="removeSliderRow(${i})">Delete</button></div>
+ <div class="field"><label>Title</label><input id="sl${i}t" value="${esc(s.title)}"></div><div class="field"><label>Subtitle</label><input id="sl${i}s" value="${esc(s.subtitle)}"></div><div class="field"><label>Offer</label><input id="sl${i}o" value="${esc(s.offer)}"></div><div class="field"><label>Button Text</label><input id="sl${i}b" value="${esc(s.button)}"></div>
+ <div class="row"><div class="field"><label>Slider Image (ছবি আপলোড করুন)</label><input id="sl${i}img" type="file" accept="image/png,image/jpeg,image/webp"><label style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-weight:normal"><input id="sl${i}rm" type="checkbox"> বর্তমান ছবি সরিয়ে ফেলুন</label></div><div><div class="logo-preview" id="sl${i}preview">${s.image?`<img src="${esc(s.image)}">`:"No Image"}</div></div></div>
+ </div>`).join("");
+}
+function addSliderRow(){
+ if(!editingSliders) editingSliders=getSliders();
+ editingSliders.push({title:"",subtitle:"",offer:"",button:"",image:""});
+ renderSliderAdmin();
+}
+function removeSliderRow(i){
+ if(editingSliders.length<=1){alert("অন্তত ১টি slider থাকতে হবে।");return}
+ if(!confirm("এই Slider মুছে ফেলবেন?"))return;
+ editingSliders.splice(i,1);
+ renderSliderAdmin();
+}
+function saveSliders(){
+ if(!editingSliders||!editingSliders.length){toast("কমপক্ষে ১টি slider রাখুন");return}
+ let tasks=[],arr=[];
+ editingSliders.forEach((s,i)=>{
+  let obj={title:document.getElementById("sl"+i+"t").value,subtitle:document.getElementById("sl"+i+"s").value,offer:document.getElementById("sl"+i+"o").value,button:document.getElementById("sl"+i+"b").value,image:s.image||""};
+  if(document.getElementById("sl"+i+"rm")?.checked) obj.image="";
+  let f=document.getElementById("sl"+i+"img").files[0];
+  if(f){
+   if(f.size>3*1024*1024){alert("Slider "+(i+1)+" এর ছবি 3MB-এর মধ্যে রাখুন");}
+   else{
+    tasks.push(new Promise(res=>{let r=new FileReader();r.onload=()=>{obj.image=r.result;res()};r.readAsDataURL(f)}));
+   }
+  }
+  arr.push(obj);
+ });
+ Promise.all(tasks).then(()=>{
+  if(!set("frwSliders",arr))return;
+  editingSliders=arr;
+  renderSliderAdmin(true);
+  toast("Sliders saved");
+ });
+}
+function openModal(t,c){modalTitle.textContent=t;modalContent.innerHTML=c;modal.classList.add("show")}function closeModal(){modal.classList.remove("show")}function loadWhatsAppSetting(){try{const s=JSON.parse(localStorage.getItem("frwSettings")||"{}"),e=document.getElementById("waNumber");if(e)e.value=s.whatsapp||""}catch(e){}}
+function saveWhatsAppSetting(){try{const s=JSON.parse(localStorage.getItem("frwSettings")||"{}"),e=document.getElementById("waNumber");if(!e)return;s.whatsapp=e.value.trim();localStorage.setItem("frwSettings",JSON.stringify(s));toast("WhatsApp নম্বর সংরক্ষণ হয়েছে")}catch(e){toast("সংরক্ষণ করা যায়নি")}}
+function loadSupportEmail(){
+  try{
+    const s=JSON.parse(localStorage.getItem("frwSettings")||"{}");
+    const e=document.getElementById("supportEmail");
+    if(e)e.value=s.supportEmail||"";
+  }catch(e){}
+}
+function saveSupportEmail(){
+  try{
+    const s=JSON.parse(localStorage.getItem("frwSettings")||"{}");
+    const e=document.getElementById("supportEmail");
+    if(!e)return;
+    const value=e.value.trim();
+    if(!value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)){
+      toast("সঠিক Gmail address দিন");
+      return;
+    }
+    s.supportEmail=value;
+    localStorage.setItem("frwSettings",JSON.stringify(s));
+    toast("Support Gmail সংরক্ষণ হয়েছে");
+  }catch(e){toast("সংরক্ষণ করা যায়নি")}
+}
+function toast(x){let t=document.getElementById("toast");t.textContent=x;t.classList.remove("hide");setTimeout(()=>t.classList.add("hide"),2200)}function openWebsite(){let s={...defaults,...get(K.settings,{})};let target=(s.websiteUrl||defaults.websiteUrl||"FRW-Online-Shop.html").trim();try{window.open(new URL(target,location.href).href,"_blank")}catch(e){window.open(target,"_blank")}}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});loginPass.addEventListener("keydown",e=>{if(e.key==="Enter")doLogin()});
+document.addEventListener('DOMContentLoaded',loadWhatsAppSetting);
+document.addEventListener('DOMContentLoaded',loadSupportEmail);
+</script></body></html>
